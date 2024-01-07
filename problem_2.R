@@ -1,62 +1,49 @@
-# Załaduj potrzebne pakiety
-library(nortest) # dla testu Andersona-Darlinga
+library(nortest) # Dla testu Andersona-Darlinga
 
-# Ustal parametry symulacji
-n <- 20 # rozmiar próby
-alpha <- 0.05 # poziom istotności
-simulations <- 10000 # liczba symulacji
+# Parametry symulacji
+n <- 20 # Rozmiar próby
+alpha <- 0.05 # Poziom istotności
+simulations <- 10000 # Liczba symulacji
+df_values <- c(5, 10, 30) # Wybrane wartości stopni swobody dla rozkładu t-Studenta
 
-shapiro_rejections <- 0
-anderson_rejections <- 0
-
-for (i in 1:simulations) {
-  # generacja danych zgodnych z rozkładem normalnym
-  sample <- rnorm(n)
-
-  # zliczanie fałszywych decyzji H1
-  if (shapiro.test(sample)$p.value < alpha) {
-    shapiro_rejections <- shapiro_rejections + 1
-  }
-
-  if (ad.test(sample)$p.value < alpha) {
-    anderson_rejections <- anderson_rejections + 1
-  }
+# Funkcja do przeprowadzania testów i zliczania odrzuceń H0
+perform_tests <- function(sample, alpha) {
+  shapiro_reject <- ifelse(shapiro.test(sample)$p.value < alpha, 1, 0)
+  anderson_reject <- ifelse(ad.test(sample)$p.value < alpha, 1, 0)
+  return(c(shapiro_reject, anderson_reject))
 }
 
+# Symulacja dla danych z rozkładu normalnego
+shapiro_rejections_norm <- anderson_rejections_norm <- numeric(simulations)
 
-cat("Liczba fałszywych decyzji za H1 w teście Shapiro-Wilk: ", shapiro_rejections, "/", simulations, "\n")
-cat("Liczba fałszywych decyzji za H1 w teście Anderson-Darling: ", anderson_rejections, "/", simulations, "\n")
-cat("Załozona liczba odrzuceń H0: ", simulations * alpha, "\n")
-cat("Moc testu Shapiro-Wilka: ", shapiro_rejections / simulations, "\n")
-cat("Moc testu Andersona-Darlinga: ", anderson_rejections / simulations, "\n")
+for (i in 1:simulations) {
+  sample <- rnorm(n)
+  results <- perform_tests(sample, alpha)
+  shapiro_rejections_norm[i] <- results[1]
+  anderson_rejections_norm[i] <- results[2]
+}
+
+cat("Dla danych z rozkładu normalnego:\n")
+cat("Liczba fałszywych decyzji za H1 w teście Shapiro-Wilk: ", sum(shapiro_rejections_norm), "/", simulations, "\n")
+cat("Liczba fałszywych decyzji za H1 w teście Anderson-Darling: ", sum(anderson_rejections_norm), "/", simulations, "\n")
+cat("Moc testu Shapiro-Wilka: ", sum(shapiro_rejections_norm) / simulations, "\n")
+cat("Moc testu Andersona-Darlinga: ", sum(anderson_rejections_norm) / simulations, "\n")
+
 
 # Symulacja dla rozkładu t-Studenta
-df_values <- c(5, 10, 30) # wybrane wartości stopni swobody
-
 for (df in df_values) {
-  shapiro_rejections <- 0
-  anderson_rejections <- 0
+  shapiro_rejections_t <- anderson_rejections_t <- numeric(simulations)
 
   for (i in 1:simulations) {
-    # generowanie danych zgodnych z rozkładem t-Studenta
     sample <- rt(n, df)
-
-    # zliczanie prawidłowych decyzji H1
-    if (shapiro.test(sample)$p.value < alpha) {
-      shapiro_rejections <- shapiro_rejections + 1
-    }
-
-    if (ad.test(sample)$p.value < alpha) {
-      anderson_rejections <- anderson_rejections + 1
-    }
+    results <- perform_tests(sample, alpha)
+    shapiro_rejections_t[i] <- results[1]
+    anderson_rejections_t[i] <- results[2]
   }
 
-  cat("For df =", df, ":\n")
-  cat("Hipoteza Zerowa H0 została odrzucona w teście Shapiro-Wilka: ", shapiro_rejections, "/", simulations, "\n")
-  cat("Hipoteza Zerowa H0 została odrzucona w teście Anderson-Darling'a: ", anderson_rejections, "/", simulations, "\n")
-  cat("Załozona liczba odrzuceń H0: ", simulations * alpha, "\n")
-
-  # Obliczenie mocy w przypadku danych z rozkładu t-Studenta dla obu rodzajów testów
-  cat("Moc testu Shapiro-Wilka: ", shapiro_rejections / simulations, "\n")
-  cat("Moc testu Andersona-Darlinga: ", anderson_rejections / simulations, "\n")
+  cat("\nDla df =", df, " i danych z rozkładu t-Studenta:\n")
+  cat("Liczba odrzuceń H0 w teście Shapiro-Wilka: ", sum(shapiro_rejections_t), "/", simulations, "\n")
+  cat("Liczba odrzuceń H0 w teście Anderson-Darling'a: ", sum(anderson_rejections_t), "/", simulations, "\n")
+  cat("Moc testu Shapiro-Wilka: ", sum(shapiro_rejections_t) / simulations, "\n")
+  cat("Moc testu Andersona-Darlinga: ", sum(anderson_rejections_t) / simulations, "\n")
 }
