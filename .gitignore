@@ -1,4 +1,6 @@
 *.Rproj
+*.bin
+*.png
 # History files
 .Rhistory
 .Rapp.history
