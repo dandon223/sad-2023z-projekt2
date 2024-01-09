@@ -26,8 +26,8 @@ for (i in 1:simulations) {
 cat("Dla danych z rozkładu normalnego:\n")
 cat("Liczba fałszywych decyzji za H1 w teście Shapiro-Wilk: ", sum(shapiro_rejections_norm), "/", simulations, "\n")
 cat("Liczba fałszywych decyzji za H1 w teście Anderson-Darling: ", sum(anderson_rejections_norm), "/", simulations, "\n")
-cat("Moc testu Shapiro-Wilka: ", sum(shapiro_rejections_norm) / simulations, "\n")
-cat("Moc testu Andersona-Darlinga: ", sum(anderson_rejections_norm) / simulations, "\n")
+cat("Istotność testu Shapiro-Wilka: ", sum(shapiro_rejections_norm) / simulations, "\n")
+cat("Istotność testu Andersona-Darlinga: ", sum(anderson_rejections_norm) / simulations, "\n")
 
 
 # Symulacja dla rozkładu t-Studenta
@@ -47,3 +47,4 @@ for (df in df_values) {
   cat("Moc testu Shapiro-Wilka: ", sum(shapiro_rejections_t) / simulations, "\n")
   cat("Moc testu Andersona-Darlinga: ", sum(anderson_rejections_t) / simulations, "\n")
 }
+
