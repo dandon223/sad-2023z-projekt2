@@ -1,10 +1,10 @@
 library(nortest) # Dla testu Andersona-Darlinga
 
 # Parametry symulacji
-n <- 20 # Rozmiar próby
+n <- 100 # Rozmiar próby
 alpha <- 0.05 # Poziom istotności
 simulations <- 10000 # Liczba symulacji
-df_values <- c(5, 10, 30) # Wybrane wartości stopni swobody dla rozkładu t-Studenta
+df_values <- c(5, 10, 50) # Wybrane wartości stopni swobody dla rozkładu t-Studenta
 
 # Funkcja do przeprowadzania testów i zliczania odrzuceń H0
 perform_tests <- function(sample, alpha) {
