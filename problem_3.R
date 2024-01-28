@@ -21,6 +21,6 @@ time_gaps <- number_of_samples_between_pulses[number_of_samples_between_pulses >
 time_gaps = time_gaps / 50e6 * 1000  # Przeliczamy na ilość próbek, gdzie 50e6 to częstotliwość próbkowania 50 MHz, a 1000 to przelicznik na milisekundy
 num_breaks <- 30
 
-alpha <- length(time_gaps)/sum(time_gaps)
+alpha <- length(time_gaps)/(sum(time_gaps) - length(time_gaps) * 200 )
 hist(time_gaps, breaks = num_breaks, freq=FALSE, main = "Histogram odstępów czasu miedzy impulsami", xlab = "Odstep czasu w ms", ylab = "Gęstość", col = "lightgreen")
 curve(dexp(x, rate = alpha), from=0, to=20, col='blue', add=TRUE)
